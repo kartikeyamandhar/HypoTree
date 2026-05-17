@@ -6,7 +6,7 @@ HypoTree is a multi-agent AI system that automates the first 48 hours of strateg
 
 ## What It Does
 
-Enter a strategic question like *"Should Skyworks and Qorvo merge?"* and HypoTree runs a pipeline of 10 specialized AI agents:
+Enter a strategic question like *"Should X and Y merge?"* and HypoTree runs a pipeline of 10 specialized AI agents:
 
 1. **Hypothesis Decomposition** -- Builds a 3-4 level MECE tree with recursive validation
 2. **Testability Classification** -- Tags every leaf as quantitative, qualitative, assumption, or already answered with priority scoring (Impact x Testability x Data Availability)
@@ -107,6 +107,3 @@ Online Travel / Expedia / Should Expedia acquire Booking Holdings?
 Ride-hailing / Grab / Should Grab expand into EV logistics in Vietnam?
 ```
 
-## License
-
-MIT
