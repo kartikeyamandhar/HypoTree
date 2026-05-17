@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { StressTestReport as Report, Critique, CritiqueSeverity, CritiqueType } from '@/types/hypothesis';
+import type { StressTestReport as Report, CritiqueSeverity, CritiqueType } from '@/types/hypothesis';
 
 const SEV: Record<CritiqueSeverity, { bg: string; border: string; text: string; icon: string }> = {
   critical: { bg: '#1c1012', border: '#7f1d1d', text: '#fca5a5', icon: '\u2716' },
@@ -11,9 +11,10 @@ const TYPES: Record<CritiqueType, string> = { devils_advocate: "Devil's Advocate
 export function StressTestReportView({ report }: { report: Report }) {
   const [fs, setFs] = useState<CritiqueSeverity | 'all'>('all');
   const [ft, setFt] = useState<CritiqueType | 'all'>('all');
-  const filtered = report.critiques.filter((c) => (fs === 'all' || c.severity === fs) && (ft === 'all' || c.critique_type === ft))
+  const filtered = report.critiques
+    .filter((c) => (fs === 'all' || c.severity === fs) && (ft === 'all' || c.critique_type === ft))
     .sort((a, b) => ({ critical: 0, warning: 1, note: 2 }[a.severity]) - ({ critical: 0, warning: 1, note: 2 }[b.severity]));
-  const selectStyle = { background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)', borderRadius: '8px', padding: '4px 8px', fontSize: '12px' };
+  const selectStyle: React.CSSProperties = { background: 'var(--bg-card)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)', borderRadius: '8px', padding: '4px 8px', fontSize: '12px' };
 
   return (
     <div>

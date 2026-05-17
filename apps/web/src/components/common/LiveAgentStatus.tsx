@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-interface LogEntry {
-  ts: number;
-  phase: string;
-  agent: string;
-  message: string;
-  level: string;
-}
+interface LogEntry { ts: number; phase: string; agent: string; message: string; level: string; }
 
 const PHASE_META: Record<string, { label: string; color: string; description: string }> = {
   P1: { label: 'Building Hypothesis Tree', color: '#6366f1', description: 'Decomposing the strategic question into a structured MECE tree' },
@@ -19,10 +13,9 @@ const PHASE_META: Record<string, { label: string; color: string; description: st
   done: { label: 'Complete', color: '#22c55e', description: 'All phases finished' },
 };
 
-interface Props {
-  projectId: string | null;
-  onComplete: () => void;
-}
+const DEFAULT_META = { label: 'Processing', color: '#6366f1', description: 'Working...' };
+
+interface Props { projectId: string | null; onComplete: () => void; }
 
 export function LiveAgentStatus({ projectId, onComplete }: Props) {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -57,17 +50,13 @@ export function LiveAgentStatus({ projectId, onComplete }: Props) {
   }, [logs]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
-  const meta = PHASE_META[currentPhase] || PHASE_META.P1;
+  const meta = PHASE_META[currentPhase] ?? DEFAULT_META;
   const phases = ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'];
   const completedPhases = new Set(logs.filter(l => l.message.toLowerCase().includes('complete')).map(l => l.phase));
-
-  const visibleLogs = logs.filter(l =>
-    !l.message.includes('tokens_in=') && l.message.length > 0 && l.phase !== ''
-  );
+  const visibleLogs = logs.filter(l => !l.message.includes('tokens_in=') && l.message.length > 0 && l.phase !== '');
 
   return (
     <div className="max-w-3xl mx-auto py-12">
-      {/* Current phase */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl mb-4"
           style={{ background: meta.color + '15', border: `1px solid ${meta.color}33` }}>
@@ -78,10 +67,9 @@ export function LiveAgentStatus({ projectId, onComplete }: Props) {
         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{meta.description}</p>
       </div>
 
-      {/* Phase progress */}
       <div className="flex justify-center gap-3 mb-8">
         {phases.map((p) => {
-          const pm = PHASE_META[p] || { color: '#6b7280', label: p };
+          const pm = PHASE_META[p] ?? DEFAULT_META;
           const done = completedPhases.has(p) || phases.indexOf(p) < phases.indexOf(currentPhase);
           const active = p === currentPhase;
           return (
@@ -99,34 +87,25 @@ export function LiveAgentStatus({ projectId, onComplete }: Props) {
         })}
       </div>
 
-      {/* Activity feed */}
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
         <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Activity</span>
           <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>{visibleLogs.length} events</span>
         </div>
-
         <div ref={feedRef} className="px-5 py-3 overflow-y-auto" style={{ maxHeight: '50vh', minHeight: '250px' }}>
           {visibleLogs.map((entry, i) => {
-            const pm = PHASE_META[entry.phase] || { color: '#6b7280' };
+            const pm = PHASE_META[entry.phase] ?? DEFAULT_META;
             const isWarning = entry.level === 'warning';
             const isRecent = i >= visibleLogs.length - 3;
-
             return (
-              <div key={i} className="flex gap-3 py-2.5 transition-opacity duration-500"
-                style={{ opacity: isRecent ? 1 : 0.5 }}>
+              <div key={i} className="flex gap-3 py-2.5 transition-opacity duration-500" style={{ opacity: isRecent ? 1 : 0.5 }}>
                 <div className="flex flex-col items-center flex-shrink-0" style={{ width: '20px' }}>
-                  <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{
-                    background: pm.color,
-                    boxShadow: isRecent ? `0 0 6px ${pm.color}44` : 'none'
-                  }} />
+                  <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ background: pm.color, boxShadow: isRecent ? `0 0 6px ${pm.color}44` : 'none' }} />
                   {i < visibleLogs.length - 1 && <div className="w-px flex-1 mt-1" style={{ background: 'var(--border-subtle)' }} />}
                 </div>
                 <div className="flex-1 min-w-0 pb-1">
                   <span className="text-xs font-semibold" style={{ color: pm.color }}>{entry.agent}</span>
-                  <p className="text-sm mt-0.5 leading-relaxed" style={{ color: isWarning ? '#fbbf24' : 'var(--text-secondary)' }}>
-                    {entry.message}
-                  </p>
+                  <p className="text-sm mt-0.5 leading-relaxed" style={{ color: isWarning ? '#fbbf24' : 'var(--text-secondary)' }}>{entry.message}</p>
                 </div>
               </div>
             );
