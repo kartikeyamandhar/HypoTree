@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { api } from '@/lib/api';
-
-interface WorkItem { hypothesis_id: string; hypothesis_statement: string; analysis_type: string; loe_hours: number; resource_type: string; }
-interface Workstream { id: string; name: string; description: string; items: WorkItem[]; total_loe: number; sequence_order: number; depends_on: string[]; }
-interface Workplan { workstreams: Workstream[]; total_loe: number; estimated_weeks: number; critical_path: string[]; summary: string; }
+import type { Workplan, Workstream } from '@/types/hypothesis';
 
 const RES_COLORS: Record<string, string> = { analyst: '#3b82f6', manager: '#f59e0b', partner: '#a855f7' };
 
@@ -37,9 +34,8 @@ export function WorkplanView({ workplan: initial, projectId }: { workplan: Workp
 
       {wp.summary && <p className="text-sm mb-4 p-3 rounded-lg" style={{ background: 'var(--bg-card)', color: 'var(--text-secondary)' }}>{wp.summary}</p>}
 
-      {/* Gantt-style visualization */}
       <div className="space-y-3 mb-6">
-        {wp.workstreams.map((ws) => (
+        {wp.workstreams.map((ws: Workstream) => (
           <div key={ws.id} className="rounded-xl overflow-hidden" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
             <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
               <div className="flex items-center gap-3">
@@ -68,7 +64,6 @@ export function WorkplanView({ workplan: initial, projectId }: { workplan: Workp
         ))}
       </div>
 
-      {/* Legend */}
       <div className="flex gap-4 mb-6">
         {Object.entries(RES_COLORS).map(([role, color]) => (
           <div key={role} className="flex items-center gap-1.5">
@@ -78,13 +73,12 @@ export function WorkplanView({ workplan: initial, projectId }: { workplan: Workp
         ))}
       </div>
 
-      {/* Negotiation chat */}
       <div className="p-4 rounded-xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
         <p className="text-xs font-mono mb-2" style={{ color: 'var(--text-muted)' }}>NEGOTIATE WORKPLAN</p>
         <div className="flex gap-2">
           <input type="text" value={msg} onChange={(e) => setMsg(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleNegotiate()}
-            placeholder='e.g., "We only have 3 weeks, reprioritize" or "Drop competitive analysis"'
+            placeholder='e.g., "We only have 3 weeks, reprioritize"'
             className="flex-1 px-3 py-2 rounded-lg text-sm outline-none"
             style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
             disabled={negotiating} />

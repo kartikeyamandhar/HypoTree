@@ -18,5 +18,9 @@ export interface TestabilityResult { classification: TestabilityClass; confidenc
 export interface AnalysisDesign { analysis_type: AnalysisType; methodology: string; data_sources: string[]; output_format: string; loe_hours: number; rationale: string; }
 export interface HypothesisNode { id: string; statement: string; parent_id: string | null; children: HypothesisNode[]; depth: number; what_must_be_true: string | null; evidence_needed: string | null; is_leaf: boolean; testability: TestabilityResult | null; analysis: AnalysisDesign | null; data_card: DataCard | null; stress_test_severity: CritiqueSeverity | null; }
 export interface ClassificationResult { question_type: QuestionType; framework: string; confidence: number; rationale: string; }
-export interface Workplan { workstreams: unknown[]; total_loe: number; estimated_weeks: number; critical_path: string[]; summary: string; }
+
+export interface WorkItem { hypothesis_id: string; hypothesis_statement: string; analysis_type: string; loe_hours: number; resource_type: string; }
+export interface Workstream { id: string; name: string; description: string; items: WorkItem[]; total_loe: number; sequence_order: number; depends_on: string[]; }
+export interface Workplan { workstreams: Workstream[]; total_loe: number; estimated_weeks: number; critical_path: string[]; summary: string; }
+
 export interface HypothesisTree { id: string; root: HypothesisNode; classification: ClassificationResult; industry: string; company: string; question: string; created_at: string; metadata: Record<string, unknown>; stress_test_report: StressTestReport | null; causal_dag: CausalDAG | null; scenarios: ScenarioConfig[]; workplan: Workplan | null; }
